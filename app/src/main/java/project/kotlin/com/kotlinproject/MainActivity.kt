@@ -6,7 +6,10 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.widget.Toast
+import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.find
+import org.jetbrains.anko.longToast
+import org.jetbrains.anko.uiThread
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,6 +42,18 @@ class MainActivity : AppCompatActivity() {
       /*  niceToast("Hello")  //classname as tag by default
         niceToast("Hello", "MyTag")
         niceToast("Hello", "MyTag", Toast.LENGTH_SHORT) */
+
+        //using anko to perform an http requet asyncronously
+
+        val url = "http://api.openweathermap.org/data/2.5/forecast/daily?" +
+                "APPID=15646a06818f61f7b8d7823ca833e1ce&zip=94043&mode=json&units=metric&\\cnt=7"
+
+        // doAsync returns a java Future, in case you want to work with futures. If you need it
+        //to return a Future with a result, you can use doAsyncResult.
+         doAsync() {
+             Request(url).run()
+             uiThread { longToast("Request performed") }
+         }
     }
 
     /**
