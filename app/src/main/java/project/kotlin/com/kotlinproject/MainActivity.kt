@@ -7,17 +7,21 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.*
 import project.kotlin.com.kotlinproject.domain.commands.RequestForecastCommand
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ToolbarManager {
 
+    override val toolbar by lazy { find<Toolbar>(R.id.toolbar) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        initToolbar()
 
 
      //   val forecastList = findViewById<RecyclerView>(R.id.forecast_list)
@@ -28,6 +32,7 @@ class MainActivity : AppCompatActivity() {
 
         //with extensions
         forecastList.layoutManager = LinearLayoutManager(this)
+        attachToScroll(forecastList)
 
 
         //create a list for the adapter
@@ -77,7 +82,7 @@ class MainActivity : AppCompatActivity() {
 
                  }
 
-                 title = "${result.city} (${result.country})"
+                 toolbarTitle = "${result.city} (${result.country})"
 
                  // In lambdas with only one argument, we
                  //can make use of the it reference, which prevents us from defining the left part of the

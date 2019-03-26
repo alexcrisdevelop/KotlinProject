@@ -63,6 +63,10 @@ class ForecastDb(
          val forecast = select(DayForecastTable.NAME).byId(id).
              parseOpt { DayForecast(HashMap(it)) }
 
-         if (forecast != null) dataMapper.convertDayToDomain(forecast) else null
+      //   if (forecast != null) dataMapper.convertDayToDomain(forecast) else null
+
+        //using let to deal with nulls: let function is only executed if forecast is not null thanks to ‘?.’ operator. It returns
+        //null otherwise
+        forecast?.let { dataMapper.convertDayToDomain(it) }
     }
 }
