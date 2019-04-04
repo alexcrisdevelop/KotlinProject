@@ -12,10 +12,13 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.*
 import project.kotlin.com.kotlinproject.domain.commands.RequestForecastCommand
+import project.kotlin.com.kotlinproject.extensions.DelegatesExt
 
 class MainActivity : AppCompatActivity(), ToolbarManager {
 
     override val toolbar by lazy { find<Toolbar>(R.id.toolbar) }
+
+    private val zipCode: Long by DelegatesExt.longPreference(this, SettingsActivity.ZIP_CODE, SettingsActivity.DEFAULT_ZIP)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,87 +27,46 @@ class MainActivity : AppCompatActivity(), ToolbarManager {
         initToolbar()
 
 
-     //   val forecastList = findViewById<RecyclerView>(R.id.forecast_list)
-
-        //using anko:
-      //  val forecastList : RecyclerView = find(R.id.forecastList)
-    //    forecastList.layoutManager = LinearLayoutManager(this)
-
         //with extensions
         forecastList.layoutManager = LinearLayoutManager(this)
         attachToScroll(forecastList)
 
 
-        //create a list for the adapter
-
-        //listOf: create an immutable list
-    /*    val items = listOf("Mon 6/23 - Sunny - 31/17",
-         "Tue 6/24 - Foggy - 21/8",
-         "Wed 6/25 - Cloudy - 22/17",
-         "Thurs 6/26 - Rainy - 18/11",
-         "Fri 6/27 - Foggy - 21/10",
-         "Sat 6/28 - TRAPPED IN WEATHERSTATION - 23/18",
-         "Sun 6/29 - Sunny - 20/7"
-        ) */
-
-   /*     forecastList.adapter = ForecastListAdapter(items)
-
-        niceToast("Hello")  //classname as tag by default
-        niceToast("Hello", "MyTag")
-        niceToast("Hello", "MyTag", Toast.LENGTH_SHORT) */
-
-        //using anko to perform an http requet asyncronously
-
-     /*   val url = "http://api.openweathermap.org/data/2.5/forecast/daily?" +
-                "APPID=15646a06818f61f7b8d7823ca833e1ce&zip=94043&mode=json&units=metric&\\cnt=7" */
-
-        // doAsync returns a java Future, in case you want to work with futures. If you need it
-        //to return a Future with a result, you can use doAsyncResult.
-         doAsync {
-          //   Request(url).run()
-          //   uiThread { longToast("Request performed") }
-
-             //using the command and data classes:
-             val result = RequestForecastCommand(94043).execute()
-             uiThread {
-               /*   forecastList.adapter = ForecastListAdapter(result, object : ForecastListAdapter.OnItemClickListener{
-                       override fun invoke(forecast: ForecastDomain) {
-                           toast(forecast.date)
-                           }
-                  }) */
-
-                 //using lambdas
-                 forecastList.adapter = ForecastListAdapter(result) {
-                  //   forecast -> toast(forecast.description)
-
-                     //starting activity with Anko:
-                     startActivity<DetailActivity>(DetailActivity.ID to it.id, DetailActivity.CITY_NAME to result.city)
-
-                 }
-
-                 toolbarTitle = "${result.city} (${result.country})"
-
-                 // In lambdas with only one argument, we
-                 //can make use of the it reference, which prevents us from defining the left part of the
-                 //function specifically.
-
-             //    val adapter = ForecastListAdapter(result) { toast(it.date) }
-
-             }
-
-         }
     }
 
 
+    override fun onResume() {
+        super.onResume()
+        loadForecast()
+    }
 
-    /*
-    inline fun <reified T: Activity> Context.startActivity(
-             vararg params: Pair<String, String>) {
 
-         val intent = Intent(this, T::class.java)
-         params.forEach { intent.putExtra(it.first, it.second) }
-         startActivity(intent)
-    }*/
+    /**
+     *  to return a Future with a result, you can use doAsyncResult.
+     *
+     */
+
+    private fun loadForecast() =   doAsync {
+        //using the command and data classes:
+        val result = RequestForecastCommand(zipCode).execute()
+        uiThread {
+
+            //using lambdas
+            forecastList.adapter = ForecastListAdapter(result) {
+
+
+                //starting activity with Anko:
+                startActivity<DetailActivity>(DetailActivity.ID to it.id, DetailActivity.CITY_NAME to result.city)
+
+            }
+
+            toolbarTitle = "${result.city} (${result.country})"
+
+        }
+
+    }
+
+
 
     /**
      * Default values can be specified in parameters

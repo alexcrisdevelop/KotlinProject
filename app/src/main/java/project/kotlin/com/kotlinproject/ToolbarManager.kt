@@ -3,6 +3,7 @@ package project.kotlin.com.kotlinproject
 import android.support.v7.graphics.drawable.DrawerArrowDrawable
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
+import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 import project.kotlin.com.kotlinproject.extensions.ctx
 import project.kotlin.com.kotlinproject.extensions.slideEnter
@@ -32,8 +33,8 @@ interface ToolbarManager {
          toolbar.inflateMenu(R.menu.menu)
          toolbar.setOnMenuItemClickListener {
              when (it.itemId) {
-                 R.id.action_settings -> App.instance.toast("Settings")
-             else -> App.instance.toast("Unknown option")
+                 R.id.action_settings -> toolbar.ctx.startActivity<SettingsActivity>()
+                 else -> App.instance.toast("Unknown option")
              }
              true
          }
