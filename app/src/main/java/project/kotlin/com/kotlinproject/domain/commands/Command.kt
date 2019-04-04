@@ -11,5 +11,5 @@ contain code.
  * */
 
 public interface Command<out T> {
-     fun execute(): T
+     suspend fun execute(): T
 }

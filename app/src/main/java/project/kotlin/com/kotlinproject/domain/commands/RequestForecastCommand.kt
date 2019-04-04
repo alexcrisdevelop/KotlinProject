@@ -1,5 +1,7 @@
 package project.kotlin.com.kotlinproject.domain.commands
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import project.kotlin.com.kotlinproject.domain.commands.mappers.ForecastDataMapper
 import project.kotlin.com.kotlinproject.domain.commands.model.ForecastList
 import project.kotlin.com.kotlinproject.data.server.ForecastRequest
@@ -21,6 +23,10 @@ class RequestForecastCommand(private val zipCode: Long, private val forecastProv
          const val DAYS = 7
          }
 
-     override fun execute(): ForecastList =
-             forecastProvider.requestByZipCode(zipCode, DAYS)
+ /*    override fun execute(): ForecastList =
+             forecastProvider.requestByZipCode(zipCode, DAYS) */
+
+    override suspend fun execute() = withContext(Dispatchers.IO) {
+         forecastProvider.requestByZipCode(zipCode, DAYS)
+    }
 }

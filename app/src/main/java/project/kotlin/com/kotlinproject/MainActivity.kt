@@ -10,11 +10,14 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.jetbrains.anko.*
 import project.kotlin.com.kotlinproject.domain.commands.RequestForecastCommand
 import project.kotlin.com.kotlinproject.extensions.DelegatesExt
 
-class MainActivity : AppCompatActivity(), ToolbarManager {
+class MainActivity : CoroutineScopeActivity(), ToolbarManager {
 
     override val toolbar by lazy { find<Toolbar>(R.id.toolbar) }
 
@@ -46,7 +49,7 @@ class MainActivity : AppCompatActivity(), ToolbarManager {
      *
      */
 
-    private fun loadForecast() =   doAsync {
+  /*  private fun loadForecast() =   doAsync {
         //using the command and data classes:
         val result = RequestForecastCommand(zipCode).execute()
         uiThread {
@@ -64,6 +67,21 @@ class MainActivity : AppCompatActivity(), ToolbarManager {
 
         }
 
+    } */
+
+    //solution using coroutine builders:
+
+    private fun loadForecast() = launch {
+      //   val result = withContext(Dispatchers.IO) { RequestForecastCommand(zipCode).execute() }
+
+        val result = RequestForecastCommand(zipCode).execute()
+         val adapter = ForecastListAdapter(result) {
+
+             //starting activity with Anko:
+             startActivity<DetailActivity>(DetailActivity.ID to it.id, DetailActivity.CITY_NAME to result.city)
+         }
+         forecastList.adapter = adapter
+                 toolbarTitle = "${result.city} (${result.country})"
     }
 
 
