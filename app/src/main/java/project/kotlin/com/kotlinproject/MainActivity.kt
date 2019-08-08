@@ -27,6 +27,8 @@ class MainActivity : CoroutineScopeActivity(), ToolbarManager {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //change
+
         initToolbar()
 
 
