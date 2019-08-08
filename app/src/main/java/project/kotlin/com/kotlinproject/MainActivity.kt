@@ -29,6 +29,7 @@ class MainActivity : CoroutineScopeActivity(), ToolbarManager {
 
         //change
         //change in branch example_branch
+        //new change
 
         initToolbar()
 
