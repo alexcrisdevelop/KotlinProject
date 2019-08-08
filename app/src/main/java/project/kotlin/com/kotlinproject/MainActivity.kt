@@ -28,6 +28,7 @@ class MainActivity : CoroutineScopeActivity(), ToolbarManager {
         setContentView(R.layout.activity_main)
 
         //change
+        //change in branch example_branch
 
         initToolbar()
 
